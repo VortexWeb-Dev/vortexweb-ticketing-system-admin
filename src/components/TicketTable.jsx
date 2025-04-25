@@ -520,7 +520,7 @@ const TicketTable = ({ tickets, sortConfig, onSort, onUpdate, onDelete }) => {
             {tickets.length > 0 ? (
               tickets.map((ticket) => (
                 <tr
-                  key={Math.random().toFixed(4) * 10000}
+                  key={Math.trunc(Math.random() * 1000000)}
                   className={`border-t dark:border-gray-700 dark:hover:bg-gray-700 border-gray-200 hover:bg-gray-50 transition-colors`}
                 >
                   <td className="py-3 px-4 min-w-30">
@@ -561,18 +561,21 @@ const TicketTable = ({ tickets, sortConfig, onSort, onUpdate, onDelete }) => {
                     {formatTicketDate(ticket.updatedTime)}
                   </td>
                   <td className="py-3 px-4">
-                    {(typeof (ticket.assignedTo )=== "number") ? (
+                    {/* {(typeof (ticket.assignedTo )== "number") ? (
                       agents.find((agent) => agent.id === ticket.assignedTo)
                         ?.fullname || (
                         <span className={"dark:text-gray-400 text-gray-500"}>
                           Unassigned
                         </span>
                       )
-                    ) : (
+                    ) : ( */}
                       <span className={"dark:text-gray-400 text-gray-500"}>
-                        {ticket.assignedTo}
+                        {/* {ticket.assignedTo} */}
+                        {agents.find((agent) => agent.id === ticket.assignedTo)
+                        ?.fullname || ticket.assignedTo }
                       </span>
-                    )}
+
+                     {/* )} */}
                   </td>
                   <td className="py-3 px-4">
                     {ticket.attachments && ticket.attachments.length > 0 ? (
