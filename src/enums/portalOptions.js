@@ -1,4 +1,4 @@
-export const CRMS = [
+const portalOptions = [
   { name: "Aghali", url: "aghali.bitrix24.com" },
   { name: "Arihant", url: "arihantcapital.bitrix24.in" },
   { name: "BWC", url: "b24-oy9apg.bitrix24.com" },
@@ -17,3 +17,5 @@ export const CRMS = [
   { name: "Excellence", url: "exxcellenceambassadorsrealestate.bitrix24.com/crm/lead/list" },
   { name: "Vortex Webclouds", url: "vortexwebclouds.bitrix24.in" }
 ];
+
+export default portalOptions
