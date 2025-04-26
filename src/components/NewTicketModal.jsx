@@ -21,22 +21,31 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
   const [showSubmitMessage, setShowSubmitMessage] = useState(false);
   const [currentFiles, setCurrentFiles] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   // Fetch employees data when component mounts
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
         setLoading(true);
-        const response = await fetch(import.meta.env.VITE_EMPLOYEES);
+  
+        const cacheBuster = Date.now(); // or use Math.random()
+        const url = `${import.meta.env.VITE_EMPLOYEES}&limit=50&page=1?$cb=${cacheBuster}`;
+  
+        const response = await fetch(url, {
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
+  
         const data = await response.json();
-
-        // Sort employees by the number of tickets they're handling (ascending)
+  
         const sortedEmployees = data.employees.sort(
           (a, b) =>
             (a.tickets ? a.tickets.length : 0) -
             (b.tickets ? b.tickets.length : 0)
         );
-
+  
         setEmployees(sortedEmployees);
         setLoading(false);
       } catch (error) {
@@ -45,9 +54,10 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
         setLoading(false);
       }
     };
-
+  
     fetchEmployees();
   }, [setLoading, setError]);
+  
 
   const handleChange = (e) => {
     const referrer = document.referrer;
@@ -82,7 +92,7 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
       // Check file size (10MB max)
       const maxSize = 10 * 1024 * 1024; // 10MB in bytes
 
-      const isValidType = validTypes.includes(file.type);
+      const isValidType = validTypes.includes(file.type) || file.type.startsWith("video/");
       const isValidSize = file.size <= maxSize;
 
       if (!isValidType) {
@@ -115,6 +125,7 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(formData);
+    setSubmitLoading(true)
 
     try {
       const response = await fetch(import.meta.env.VITE_CREATE_TICKET, {
@@ -161,6 +172,8 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
       console.error("Error submitting ticket:", error);
       setSubmitMessage("Error submitting ticket. Please try again.");
       setShowSubmitMessage(true);
+    } finally {
+      setSubmitLoading(false)
     }
   };
 
@@ -340,7 +353,7 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
                         id="fileInput"
                         className="hidden"
                         multiple
-                        accept=".jpg,.jpeg,.png,.gif,.svg,.webp,.mp4,.webm,.ogg,.pdf,.docx"
+                        accept=".jpg,.jpeg,.png,.gif,.svg,.webp,video/*,.pdf,.docx"
                         onChange={handleFileChange}
                       />
                     </label>
@@ -395,9 +408,10 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
           <button
             form="createTicket"
             type="submit"
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm"
+            className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm ${submitLoading ? 'disabled' : ''}`}
           >
-            Submit Ticket
+           {submitLoading ? "Submitting.." : "Submit"} 
+           
           </button>
         </div>
       </div>
