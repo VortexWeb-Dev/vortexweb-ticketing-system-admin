@@ -23,13 +23,13 @@ const fetchAllData = async (
         }
       });
 
-      const { tickets, pagination } = response.data;
+      const { bugs, pagination } = response.data;
 
       const newTotal = pagination.total;
 
       if (setError) setError(null);
 
-      aggregateData = [...aggregateData, ...tickets];
+      aggregateData = [...aggregateData, ...bugs];
       total = newTotal;
 
       if (aggregateData.length >= total) break;

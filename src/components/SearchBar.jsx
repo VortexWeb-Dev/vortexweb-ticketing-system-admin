@@ -58,9 +58,10 @@ const SearchBar = ({ onSearch, onStatusChange, onPriorityChange }) => {
             >
               <option value="">All Statuses</option>
               <option value="Open">Open</option>
-              <option value="InProgress">In Progress</option>
+              <option value="In Progress">In Progress</option>
               <option value="Resolved">Resolved</option>
               <option value="Closed">Closed</option>
+              <option value="Reopened">Reopened</option>
             </select>
           </div>
           

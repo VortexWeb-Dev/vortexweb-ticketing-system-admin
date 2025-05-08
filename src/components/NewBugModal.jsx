@@ -1,20 +1,28 @@
 import { useState, useEffect } from "react";
-import { CloudUpload, Bell, Search, LogIn } from "lucide-react";
-import fetchAllData from "../utils/fetchAllData";
+import { CloudUpload, Bug} from "lucide-react";
 import fileToBase64 from "../utils/filetob64";
 import portalOptions from "./../enums/portalOptions";
+import impOptions from "../enums/impOptions";
 
-function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
+
+function NewBugModal({ onClose, setBugs, setLoading, setError }) {
   const [formData, setFormData] = useState({
     title: "",
-    status: "Open",
-    priority: "Low",
-    category: "Technical Support",
     description: "",
-    client_name: "",
-    assigned_to: "",
+    priority: "Low",
+    severity: "",
+    category: "Technical Support",
+    status: "Open",
+    reported_by: "",
+    environment: "",
     attachments: [],
     portal_url: "",
+    date_found: "",
+    steps_to_reproduce: "",
+    expected_result: "",
+    actual_result: "",
+    logs: "",
+    assigned_to: "",
   });
 
   const [submitMessage, setSubmitMessage] = useState("");
@@ -28,24 +36,26 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
     const fetchEmployees = async () => {
       try {
         setLoading(true);
-  
+
         const cacheBuster = Date.now(); // or use Math.random()
-        const url = `${import.meta.env.VITE_EMPLOYEES}&limit=50&page=1?$cb=${cacheBuster}`;
-  
+        const url = `${
+          import.meta.env.VITE_EMPLOYEES
+        }&limit=50&page=1?$cb=${cacheBuster}`;
+
         const response = await fetch(url, {
           headers: {
             "Cache-Control": "no-cache",
           },
         });
-  
+
         const data = await response.json();
-  
+
         const sortedEmployees = data.employees.sort(
           (a, b) =>
             (a.tickets ? a.tickets.length : 0) -
             (b.tickets ? b.tickets.length : 0)
         );
-  
+
         setEmployees(sortedEmployees);
         setLoading(false);
       } catch (error) {
@@ -54,14 +64,13 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
         setLoading(false);
       }
     };
-  
+
     fetchEmployees();
   }, [setLoading, setError]);
-  
 
   const handleChange = (e) => {
-    const referrer = document.referrer;
-    console.log(referrer);
+    // const referrer = document.referrer;
+    // console.log(referrer);
 
     const { name, value } = e.target;
     console.log(name, value);
@@ -92,7 +101,8 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
       // Check file size (10MB max)
       const maxSize = 10 * 1024 * 1024; // 10MB in bytes
 
-      const isValidType = validTypes.includes(file.type) || file.type.startsWith("video/");
+      const isValidType =
+        validTypes.includes(file.type) || file.type.startsWith("video/");
       const isValidSize = file.size <= maxSize;
 
       if (!isValidType) {
@@ -126,10 +136,12 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
     e.preventDefault();
     console.log(formData);
 
-    // setSubmitLoading(true)
+    setSubmitLoading(true)
 
     try {
-      const response = await fetch(import.meta.env.VITE_CREATE_TICKET, {
+      console.log(import.meta.env.VITE_CREATE_BUG);
+      
+      const response = await fetch(import.meta.env.VITE_CREATE_BUG, {
         method: "POST",
         body: JSON.stringify(formData),
       });
@@ -138,43 +150,52 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
 
       const data = await response.json();
 
-      if (data.ticket) {
+      if (data.bug) {
         console.log(data);
-        fetchAllData(
-          "https://myemirateshome.com/vortex/ticketing-system-backend/?endpoint=tickets&limit=50&page=",
-          {},
-          setLoading,
-          setError
-        ).then((data) => {
-          console.log(data);
-          setTickets(data);
-        });
-        setSubmitMessage("Ticket submitted successfully!");
+        const response = await fetch(import.meta.env.VITE_GETALL_BUGS);
+
+        console.log(formData);
+
+        const getData = await response.json();
+        console.log("getData: ", getData);
+        
+        setBugs(getData.bugs);
+
+        setSubmitMessage("Bug Raised successfully!");
         setShowSubmitMessage(true);
 
         // Reset form
         setFormData({
           title: "",
-          priority: "Low",
-          category: "Technical Support",
           description: "",
-          client_name: "",
-          assigned_to: "",
+          priority: "Low",
+          severity: "",
+          category: "Technical Support",
+          status: "Open",
+          reported_by: "",
+          environment: "",
           attachments: [],
           portal_url: "",
+          date_found: "",
+          steps_to_reproduce: "",
+          expected_result: "",
+          actual_result: "",
+          logs: "",
+          assigned_to: "",
         });
 
-        // setSubmitLoading(false)
         // Hide success message after 3 seconds
         setTimeout(() => {
           setShowSubmitMessage(false);
         }, 3000);
       }
     } catch (error) {
-      console.error("Error submitting ticket:", error);
-      setSubmitMessage("Error submitting ticket. Please try again.");
+      console.error("Error raising bug:", error);
+      setSubmitMessage("Error raising bug. Please try again.");
       setShowSubmitMessage(true);
-    } 
+    } finally {
+      setSubmitLoading(false)
+    }
   };
 
   const removeAttachment = (index) => {
@@ -186,10 +207,10 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
 
   return (
     <div className="fixed inset-0 z-50 overflow-auto shadow-2xl bg-opacity-50 flex items-center justify-center p-6 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-full overflow-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-[50%] w-full max-h-full overflow-auto">
         <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Create New Ticket
+          <h3 className="text-2xl font-semibold text-gray-900 dark:text-white flex item-center justify-center">
+            Raise a bug &nbsp;{<Bug className="w-8 h-8 text-gray-400" />}
           </h3>
           <button
             onClick={onClose}
@@ -212,9 +233,7 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
             </div>
           )}
 
-          <form id="createTicket" onSubmit={handleSubmit} className="space-y-4">
-
-
+          <form id="raiseBug" onSubmit={handleSubmit} className="space-y-4">
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Title
@@ -225,19 +244,48 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
                 value={formData.title}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Brief description of the issue"
                 required
               />
             </div>
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Client Name
+                Environment
               </label>
               <input
                 type="text"
-                name="client_name"
-                value={formData.client_name}
+                name="environment"
+                value={formData.environment}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="In what environment did bug occured"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+    Date Found
+  </label>
+  <input
+    type="date"
+    name="date_found"
+    value={formData.date_found}
+    onChange={handleChange}
+    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+    required
+  />
+</div>
+
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Reported By
+              </label>
+              <input
+                type="text"
+                name="reported_by"
+                value={formData.reported_by}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder=""
@@ -276,7 +324,6 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
                 value={formData.portal_url}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                
               >
                 <option value="">Select Portal Name </option>
 
@@ -324,6 +371,24 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Severity
+              </label>
+              <select
+                name="severity"
+                value={formData.severity}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {impOptions.map((severity) => (
+                  <option key={severity.value} value={severity.value}>
+                    {severity.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Description
               </label>
               <textarea
@@ -339,7 +404,67 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Attachments
+                Steps To Reproduce
+              </label>
+              <textarea
+                name="steps_to_reproduce"
+                value={formData.steps_to_reproduce}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="4"
+                placeholder="Ex: Step-1: Open app. Step-2: Click on listing"
+                required
+              ></textarea>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Expected Result
+              </label>
+              <textarea
+                name="expected_result"
+                value={formData.expected_result}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="4"
+                placeholder="What was the expected result"
+                required
+              ></textarea>
+            </div>
+
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Actual Result
+              </label>
+              <textarea
+                name="actual_result"
+                value={formData.actual_result}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="4"
+                placeholder="What result you got"
+                required
+              ></textarea>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Logs
+              </label>
+              <textarea
+                name="logs"
+                value={formData.logs}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="4"
+                required
+              ></textarea>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Screenshots/Video/Doc
               </label>
               <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md p-4 text-center">
                 <div className="flex flex-col items-center">
@@ -406,12 +531,11 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
             Cancel
           </button>
           <button
-            form="createTicket"
+            form="raiseBug"
             type="submit"
             className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm`}
           >
-           {submitLoading ? "Submitting.." : "Submit"} 
-           
+            {submitLoading ? "Submitting.." : "Submit"}
           </button>
         </div>
       </div>
@@ -419,4 +543,4 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
   );
 }
 
-export default NewTicketModal;
+export default NewBugModal;

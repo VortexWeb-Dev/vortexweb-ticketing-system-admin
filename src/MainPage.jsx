@@ -68,22 +68,6 @@ export default function TicketingSystem() {
   ];
   
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Open":
-        return "text-blue-600 bg-blue-100";
-      case "In Progress":
-        return "text-yellow-600 bg-yellow-100";
-      case "Pending":
-        return "text-purple-600 bg-purple-100";
-      case "Closed":
-        return "text-gray-600 bg-gray-100";
-      default:
-        return "text-gray-600 bg-gray-100";
-    }
-  };
-
-
 
   return (
     <div className={` h-screen flex flex-col`}>
@@ -458,78 +442,6 @@ function NewTicketModal({ onClose, setTickets, setLoading, setError }) {
         </div>
 
         <div className="p-4">
-
-          {/* <form>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Subject
-              </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Brief description of the issue"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Priority
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option>Low</option>
-                <option>Medium</option>
-                <option>High</option>
-              </select>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Category
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option>Technical Support</option>
-                <option>Billing</option>
-                <option>Feature Request</option>
-                <option>Account Access</option>
-                <option>Other</option>
-              </select>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Description
-              </label>
-              <textarea
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows="4"
-                placeholder="Please provide details about your issue..."
-              ></textarea>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Attachments
-              </label>
-              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md p-4 text-center">
-                <div className="flex flex-col items-center">
-                  <CloudUpload 
-                    className="w-8 h-8 text-gray-400"
-                  />
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Drag and drop files here, or{" "}
-                    <span className="text-blue-500 hover:text-blue-600 cursor-pointer">
-                      browse
-                    </span>
-                  </p>
-                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                    Max file size: 10MB
-                  </p>
-                </div>
-                <input type="file" className="hidden" />
-              </div>
-            </div>
-          </form> */}
-
           
 
 {showSubmitMessage && (

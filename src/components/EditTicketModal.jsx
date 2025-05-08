@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { X, AlertCircle, CheckCircle2, Clock, UserCircle } from "lucide-react";
-import CommentCell from "./CommentCell";
 
 const EditTicketModal = ({ ticket, agents, onUpdate, onClose }) => {
   const [formData, setFormData] = useState({
@@ -15,9 +14,9 @@ const EditTicketModal = ({ ticket, agents, onUpdate, onClose }) => {
   const statusOptions = [
     "Open",
     "In Progress",
-    "Pending",
     "Resolved",
     "Closed",
+    "Reopened"
   ];
   const priorityOptions = ["Low", "Medium", "High", "Critical"];
 
@@ -221,35 +220,7 @@ const EditTicketModal = ({ ticket, agents, onUpdate, onClose }) => {
                     </label>
                   ))}
 
-                  {/* {agents.map(agent => (
-                    <label 
-                      key={agent.id} 
-                       className="flex items-center p-3 dark:hover:bg-gray-700 hover:bg-gray-100 rounded cursor-pointer"
-                    >
-                      <input
-                        type="radio"
-                        name="assignedTo"
-                        value={formData.assigned_to}
-                        // checked={formData.assignedTo === agent.name}
-                        onChange={handleChange}
-                        className="mr-3 text-blue-600 focus:ring-blue-500"
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium dark:text-white">{agent.fullname}</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          Currently handling {agent.tickets.length} ticket{agent.tickets.length !== 1 ? 's' : ''}
-                        </div>
-                      </div>
-                      <div className="ml-2">
-                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full 
-                          ${agent.tickets.length > 5 ? 'bg-red-100 text-red-800' : 
-                            agent.tickets.length > 3 ? 'bg-yellow-100 text-yellow-800' : 
-                            'bg-green-100 text-green-800'}`}>
-                          {agent.tickets.length}
-                        </span>
-                      </div>
-                    </label>
-                  ))} */}
+                 
                 </div>
               </div>
             </div>
